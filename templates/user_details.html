@@ -10,6 +10,29 @@
             <li class="list-group-item">Email Address: <span class="text-end">{{user.email}}</span></li>
             <li class="list-group-item">Name: <span>{{user.first_name}} {{user.last_name}}</span></li>
           </ul>
+          {% if session['user'] == user.username %}
+          <a href="#" class="btn btn-primary">Post Feedback</a>
+          <a href="#" class="btn btn-danger">Delete Account</a>
+          {% endif %}
         </div>
+        <hr>
+        {% for feedback in all_feedback %}
+        <div class="card my-4">
+          <div class="card-body">
+            <h5 class="card-title text-info">
+              {{feedback.title}}
+              {% if session['user'] == feedback.username %}
+              <form style="display:inline;" action="/feedback/{{feedback.id}}/delete" method="POST">
+                <button class="btn btn-sm btn-danger">X</button>
+              </form>
+              {% endif %}
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{user.username}}</h6>
+            <p class="card-text">
+              {{feedback.content}}
+            </p>
+          </div>
+        </div>
+        {% endfor %}
       </div>
 {% endblock %}

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User
+from models import connect_db, db, User, Feedback
 from forms import UserForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 
@@ -49,7 +49,10 @@ def expose_secrets(username):
     if 'user' not in session:
         return redirect('/login')
     user = User.query.get_or_404(username)
-    return render_template('user_details.html', user=user)
+    
+    #get a list of all of the user's feedback
+    all_feedback = user.feedback
+    return render_template('user_details.html', user=user, all_feedback=all_feedback)
 
 @app.route('/login', methods=["GET", "POST"])
 def show_login():
