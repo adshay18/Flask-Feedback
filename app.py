@@ -100,3 +100,39 @@ def handle_feedback(username):
             form.content.errors = ['An error occured, please enter a title and content.']
 
     return render_template('add_feedback.html', form=form)
+
+@app.route('/users/<username>/delete', methods=["POST"])
+def delete_user(username):
+    '''Only a logged in user can delete their own account'''
+    if 'user' not in session:
+        return redirect('/login')
+    
+    user = User.query.get_or_404(username)
+    
+    if user:
+        if session['user'] != user.username:
+            return redirect(f'/users/{user.username}')
+        else:
+            User.query.filter_by(username=username).delete()
+            db.session.commit()
+            session.pop('user')
+            return redirect('/')
+    return redirect(f'/user/{user.username}')
+
+@app.route('/feedback/<int:feedback_id>/delete', methods=["POST"])
+def delete_feedback(feedback_id):
+    '''Delete a piece of feedback'''
+    if 'user' not in session:
+        return redirect('/login')
+    feedback = Feedback.query.get_or_404(feedback_id)
+    user = User.query.get_or_404(feedback.user.username)
+    
+    if user:
+        if session['user'] != user.username:
+            return redirect(f'/users/{user.username}')
+        else:
+            Feedback.query.filter_by(id=feedback_id).delete()
+            db.session.commit()
+            return redirect(f'/users/{user.username}')
+    
+    return redirect(f'/users/{user.username}')
