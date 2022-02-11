@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, db, User, Feedback
-from forms import UserForm, LoginForm
+from forms import UserForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -75,3 +75,28 @@ def show_login():
 def logout_user():
     session.pop('user')
     return redirect('/login')
+
+
+@app.route('/users/<username>/feedback/add', methods=["GET", "POST"])
+def handle_feedback(username):
+    '''Show feedback from and handle submission'''
+    form = FeedbackForm()
+    if 'user' not in session:
+        return redirect('/login')
+    
+    user = User.query.get_or_404(username)
+    if session['user'] != user.username:
+        return redirect(f'/users/{user.username}')
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+
+        feedback = Feedback(title=title, content=content, username=user.username)
+        if feedback:
+            db.session.add(feedback)
+            db.session.commit()
+            return redirect(f'/users/{user.username}')
+        else:
+            form.content.errors = ['An error occured, please enter a title and content.']
+
+    return render_template('add_feedback.html', form=form)

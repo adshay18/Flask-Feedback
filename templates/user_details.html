@@ -11,8 +11,10 @@
             <li class="list-group-item">Name: <span>{{user.first_name}} {{user.last_name}}</span></li>
           </ul>
           {% if session['user'] == user.username %}
-          <a href="#" class="btn btn-primary">Post Feedback</a>
-          <a href="#" class="btn btn-danger">Delete Account</a>
+          <a href="/users/{{user.username}}/feedback/add" class="btn btn-primary">Post Feedback</a>
+          <form style="display:inline" action="/users/{{user.username}}/delete" method="POST">
+            <button class="btn btn-danger">Delete Account</button>
+          </form>
           {% endif %}
         </div>
         <hr>
