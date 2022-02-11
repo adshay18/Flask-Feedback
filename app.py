@@ -37,8 +37,13 @@ def show_registration():
         try:
             db.session.commit()
         except IntegrityError:
-            form.username.errors.append('Username taken.  Please pick another')
+            form.username.errors.append('Username already taken.')
             return render_template('register.html', form=form)
         session['user'] = new_user.username
-        return redirect('/')
+        return redirect('/secret')
     return render_template('register.html', form=form)
+
+@app.route('/secret')
+def expose_secrets():
+    '''Starter secret route for logged in users only'''
+    return('You made it to the secret page!')
