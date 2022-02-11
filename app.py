@@ -40,15 +40,16 @@ def show_registration():
             form.username.errors.append('Username already taken.')
             return render_template('register.html', form=form)
         session['user'] = new_user.username
-        return redirect('/secret')
+        return redirect(f'/users/{new_user.username}')
     return render_template('register.html', form=form)
 
-@app.route('/secret')
-def expose_secrets():
-    '''Starter secret route for logged in users only'''
+@app.route('/users/<username>')
+def expose_secrets(username):
+    '''Protected route for logged in users only to view user info'''
     if 'user' not in session:
         return redirect('/login')
-    return('You made it to the secret page!')
+    user = User.query.get_or_404(username)
+    return render_template('user_details.html', user=user)
 
 @app.route('/login', methods=["GET", "POST"])
 def show_login():
@@ -61,7 +62,7 @@ def show_login():
         user = User.authenticate(username, password)
         if user:
             session['user'] = user.username
-            return redirect('/secret')
+            return redirect(f'/users/{user.username}')
         else:
             form.username.errors = ['Invalid username/password.']
 
@@ -70,4 +71,4 @@ def show_login():
 @app.route('/logout')
 def logout_user():
     session.pop('user')
-    return redirect('/')
+    return redirect('/login')

@@ -1,0 +1,15 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+    <div class="card container mt-4">
+        <div class="card-body">
+          <h5 class="card-title">{{user.username}}'s Page</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Details:</h6>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Username: <span class="text-end">{{user.username}}</span></li>
+            <li class="list-group-item">Email Address: <span class="text-end">{{user.email}}</span></li>
+            <li class="list-group-item">Name: <span>{{user.first_name}} {{user.last_name}}</span></li>
+          </ul>
+        </div>
+      </div>
+{% endblock %}
